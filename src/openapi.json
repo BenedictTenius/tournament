@@ -1,0 +1,53 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Tournament API",
+    "version": "1.0.0",
+    "description": "API для управления турнирами, матчами и пользователями"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "post": {
+        "summary": "Создать пользователя",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "name": { "type": "string" }, "email": { "type": "string" } },
+                "required": ["name", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Пользователь создан" }
+        }
+      }
+    },
+    "/tournament": {
+      "post": {
+        "summary": "Создать турнир",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "name": { "type": "string" }, "startAt": { "type": "string", "format": "date-time" } },
+                "required": ["name", "startAt"]
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Турнир создан" } }
+      }
+    }
+  }
+}

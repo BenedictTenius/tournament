@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  createdAt DateTime  @default(now())
+
+  tournaments       TournamentParticipant[]
+  matchesAsPlayer1  Match[] @relation("player1Matches")
+  matchesAsPlayer2  Match[] @relation("player2Matches")
+  wonMatches        MatchResult[] @relation("winnerRelation")
+}
+
+model Tournament {
+  id          Int       @id @default(autoincrement())
+  name        String
+  startAt     DateTime
+  endAt       DateTime?
+
+  participants TournamentParticipant[]
+  matches      Match[]
+}
+
+model TournamentParticipant {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  score        Int        @default(0)
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, tournamentId])
+}
+
+model Match {
+  id            Int       @id @default(autoincrement())
+  tournament    Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId  Int
+  player1       User      @relation("player1Matches", fields: [player1Id], references: [id])
+  player1Id     Int
+  player2       User      @relation("player2Matches", fields: [player2Id], references: [id])
+  player2Id     Int
+  result        MatchResult?
+
+  createdAt     DateTime  @default(now())
+}
+
+model MatchResult {
+  id        Int    @id @default(autoincrement())
+  match     Match  @relation(fields: [matchId], references: [id])
+  matchId   Int    @unique
+  winner    User   @relation("winnerRelation", fields: [winnerId], references: [id])
+  winnerId  Int
+  score1    Int
+  score2    Int
+  createdAt DateTime @default(now())
+}
